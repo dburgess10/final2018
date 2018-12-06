@@ -1,7 +1,7 @@
 ---
 title: "Abacavirinol"
-author: "Put your name here!"
-date: "put the date here"
+author: "Dulce Burgess"
+date: "12/5/18"
 output: html_document
 ---
 
@@ -9,6 +9,9 @@ output: html_document
 require(tidyverse)
 require(tigerstats)
 abac <-read.csv(file="abacavirinol.csv",header=TRUE)
+Female <- filter(abac, sex=="F")
+Male <- filter(abac, sex=="M")
+Druggies <- filter(abac, Ivdrug=="user")
 ```
 
 # Introduction
@@ -17,9 +20,13 @@ abac <-read.csv(file="abacavirinol.csv",header=TRUE)
 
 A new  preventative aides (abacavirinol) is under test in clinical trials. Analyze the effectiveness of this drug across the board. Consider population subgroups by gender, drug use, and sexual orientation. Finish this!
 
+Using the abac data,we will analyze the effectiveness of the drug under the subgroups by gender, drug use, and sexual orientation.
+
 # Methods
 
 <!--Decide on your methods:  use "variable analysis" or other appropriate descriptors.  Make sure to choose at least one graphical method and at least one numerical method. Discuss what data manipulations may be needed for example subsetting or other binning procedures and what sort of graphical displays and inferential tools will be used!-->
+ 
+In order to analyze the variables, we will be using barcharts and colPerc so we can take a look at how the treatment affects the variables. 
 
 #Results
 
@@ -31,15 +38,66 @@ A new  preventative aides (abacavirinol) is under test in clinical trials. Analy
 
 <!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question. Bottom line is to explain the features of the graph that are relevant to conforming or departing to what is expected by your null hypothesis !-->
 
+```{r}
+results <- xtabs(~infected+treatment,data=abac)
+barchartGC (results,type = "percent")
+```
+  
+Those who are infectes with aids are more likely to take the placebo.  
+  
+```{r}
+barchartGC(~sex+treatment,data=abac)
+```
+
+Females are more likely to take the drug and placebo than males.
+
+```{r}
+barchartGC(~LBGT+treatment,data=abac)
+```
+
+The no group significantly have more of a chance taking the drug and placebo.  
+
+```{r}
+barchartGC(~Ivdrug+treatment,data=abac)
+```
+ 
+Those who are users of IVdrug have a significantly less likely to got through treatment.   
+
 ### Numerical Descriptive Results
 
 <!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
+
+```{r}
+colPerc(results)
+rowPerc(results)
+```
+ 
+
 
 ## Inferential Results
 
 <!--State hypothesis clearly.  Make sure your discussion of the inferential test covers all the aspects that the test output produces, such as test statistic, p-value etc.  Make a decision about the null hypothesis, explain the assumptions on which the selected test/procedure was based, and why the chosen procedure satisfys the assumptions and is appropriate to answer the research question!-->
 
+```{r}
+chisqtestGC(~sex+treatment, data=abac, graph=TRUE)
+```
 
+Our P-Value is 0.8864. This means the probability of getting a sample like this under conditions when the null hypothesis is true, is about 1 in 100. This is below our threshold of belief. Since the P-Value is too low, we wiil reject the null and conclude that there is a relationship.
+ 
+```{r}
+chisqtestGC(~LBGT+treatment, data=abac, graph=TRUE)
+```
+ 
+Our P-Value is 0.2312. This means the probability of getting a sample like this under conditions when the null hypothesis is true, is about 1 in 100. This is below our threshold of belief. Since the P-Value is too low, we wiil reject the null and conclude that there is a relationship. 
+ 
+```{r}
+chisqtestGC(~Ivdrug+treatment, data=abac, graph=TRUE)
+``` 
+ 
+Our P-Value is 0.0188. This means the probability of getting a sample like this under conditions when the null hypothesis is true, is about 1 in 100. This is below our threshold of belief. Since the P-Value is too low, we wiil reject the null and conclude that there is a relationship. 
+  
+ 
 # Discussion and Conclusion
 
 <!--Discussion and conclusion here.  If you found a relationship be sure to consider whether the relationship occurs because one of the variavbles causes the other, or whether they perhasps are related for some other reason.  Watch the chapter 6 videos from the GeorgeTown videos collection.!-->
+After viewing the results graphically, numerically, and running chi-square tests on the data, we can conclude that there is a relationship between treatment and the variables sex, Ivdrug, and LBGt.
